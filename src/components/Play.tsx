@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -54,15 +54,20 @@ interface PlayProps {
   currentSong: any;
   isPlaying: boolean;
   setIsPlaying: (e: any) => void;
+  setSongInfo: any;
+  songInfo: any;
+  audioRef: any;
 }
 
 const Play: React.FC<PlayProps> = ({
-  currentSong,
   isPlaying,
   setIsPlaying,
+  setSongInfo,
+  songInfo,
+  audioRef,
+  currentSong,
 }): any => {
   //Ref
-  const audioRef = useRef<HTMLAudioElement>(null);
 
   //Event Handlers
   const playSongHandler = () => {
@@ -70,18 +75,6 @@ const Play: React.FC<PlayProps> = ({
       isPlaying ? audioRef.current.pause() : audioRef.current.play();
       setIsPlaying(!isPlaying);
     }
-  };
-
-  //State
-  const [songInfo, setSongInfo] = useState({
-    currentTime: 0,
-    duration: 0,
-  });
-
-  const timeUpdateHandler = (e: any) => {
-    const current = e.target.currentTime;
-    const duration = e.target.duration;
-    setSongInfo({ ...songInfo, currentTime: current, duration: duration });
   };
 
   const getTime = (time: number) => {
@@ -103,12 +96,12 @@ const Play: React.FC<PlayProps> = ({
         <p>{getTime(songInfo.currentTime)}</p>
         <input
           min={0}
-          max={songInfo.duration}
+          max={songInfo.duration || 0}
           value={songInfo.currentTime}
           onChange={(e) => dragHandler(e)}
           type="range"
         />
-        <p>{getTime(songInfo.duration)}</p>
+        <p>{songInfo.duration ? getTime(songInfo.duration) : getTime(0)}</p>
       </TimeControl>
       <PlayControl>
         <SkipBack size="2x" icon={faAngleLeft}></SkipBack>
@@ -119,13 +112,6 @@ const Play: React.FC<PlayProps> = ({
         ></PlayButton>
         <SkipForward size="2x" icon={faAngleRight}></SkipForward>
       </PlayControl>
-
-      <audio
-        onTimeUpdate={timeUpdateHandler}
-        onLoadedMetadata={timeUpdateHandler}
-        ref={audioRef}
-        src={currentSong.audio}
-      ></audio>
     </Player>
   );
 };

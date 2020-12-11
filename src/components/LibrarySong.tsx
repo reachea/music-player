@@ -30,11 +30,44 @@ const SongDescription = styled.div`
 
 interface SongProps {
   song: any;
+  songs: any;
+  setCurrentSong: any;
+  audioRef: any;
+  setSongs: any;
 }
 
-const LibrarySong: React.FC<SongProps> = ({ song }): any => {
+const LibrarySong: React.FC<SongProps> = ({
+  song,
+  songs,
+  setCurrentSong,
+  audioRef,
+  setSongs,
+}): any => {
+  const songSelectHandler = () => {
+    setCurrentSong(song);
+
+    const newSongs = songs.map((state: any) => {
+      if (state.id === song.id) {
+        return {
+          ...state,
+          active: true,
+        };
+      } else {
+        return {
+          ...state,
+          active: false,
+        };
+      }
+    });
+
+    setSongs(newSongs);
+  };
+
   return (
-    <LibrarySongContainer>
+    <LibrarySongContainer
+      onClick={songSelectHandler}
+      style={{ backgroundColor: `${song.active ? "rgb(165, 181, 228)" : ""}` }}
+    >
       <img alt={song.name} src={song.cover}></img>
       <SongDescription>
         <h3>{song.name}</h3>

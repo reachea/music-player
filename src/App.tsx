@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { ThemeProvider, createGlobalStyle } from "styled-components";
 
 //import data
@@ -48,6 +48,10 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 function App() {
+  //Ref
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  //States
   const [songs, setSongs] = useState(data());
 
   const [currentSong, setCurrentSong] = useState(songs[0]);
@@ -55,6 +59,26 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const Theme = {};
+
+  const [songInfo, setSongInfo] = useState({
+    currentTime: 0,
+    duration: 0,
+  });
+
+  //Event
+  const timeUpdateHandler = (e: any) => {
+    const current = e.target.currentTime;
+    const duration = e.target.duration;
+    setSongInfo({ ...songInfo, currentTime: current, duration: duration });
+  };
+
+  const autoPlayHandler = () => {
+    if (isPlaying) {
+      if (audioRef && audioRef.current) {
+        audioRef.current.play();
+      }
+    }
+  };
 
   return (
     <ThemeProvider theme={Theme}>
@@ -66,10 +90,25 @@ function App() {
             currentSong={currentSong}
             isPlaying={isPlaying}
             setIsPlaying={setIsPlaying}
+            setSongInfo={setSongInfo}
+            songInfo={songInfo}
+            audioRef={audioRef}
           />
-          <Library songs={songs} />
+          <Library
+            songs={songs}
+            setCurrentSong={setCurrentSong}
+            audioRef={audioRef}
+            setSongs={setSongs}
+          />
         </div>
       </>
+      <audio
+        onLoadedData={autoPlayHandler}
+        onTimeUpdate={timeUpdateHandler}
+        onLoadedMetadata={timeUpdateHandler}
+        ref={audioRef}
+        src={currentSong.audio}
+      ></audio>
     </ThemeProvider>
   );
 }

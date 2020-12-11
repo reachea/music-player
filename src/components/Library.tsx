@@ -22,15 +22,30 @@ const LibrarySongs = styled.div``;
 
 interface LibraryProps {
   songs: any;
+  setCurrentSong: any;
+  audioRef: any;
+  setSongs: any;
 }
 
-const Library: React.FC<LibraryProps> = ({ songs }): any => {
+const Library: React.FC<LibraryProps> = ({
+  songs,
+  setCurrentSong,
+  audioRef,
+  setSongs,
+}): any => {
   return (
     <LibraryContainer>
       <h2>Library</h2>
       <LibrarySongs>
-        {songs.map((song: {}) => (
-          <LibrarySong song={song} />
+        {songs.map((song: any) => (
+          <LibrarySong
+            song={song}
+            songs={songs}
+            setCurrentSong={setCurrentSong}
+            key={song.id}
+            audioRef={audioRef}
+            setSongs={setSongs}
+          />
         ))}
       </LibrarySongs>
     </LibraryContainer>
